@@ -35,7 +35,7 @@ if os.path.exists(COWRIE_JSON_LOG):
     with open(COWRIE_JSON_LOG,"rb") as f:
         f.seek(0,2)
         log_start=f.tell()
-
+print(f"[*] Cowrie log offset : {log_start}")
 client=paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 client.connect(HOST,port=PORT,username=USERNAME,password=PASSWORD,
@@ -69,39 +69,127 @@ for phase in scenario["phases"]:
 
 shell.send("exit\n")
 time.sleep(1)
+
 client.close()
+
 time.sleep(2)
 
-events=[]
-session=None
-if os.path.exists(COWRIE_JSON_LOG):
-    with open(COWRIE_JSON_LOG,"rb") as f:
+print(f"[*] Cowrie log size : {os.path.getsize(COWRIE_JSON_LOG)}")
+
+# =====================================================
+# Extract Cowrie Session Logs
+# =====================================================
+
+print("\n[*] Extracting Cowrie logs...")
+
+events = []
+filtered = []
+session = None
+
+if not os.path.exists(COWRIE_JSON_LOG):
+    print("[!] Cowrie log file not found!")
+else:
+
+    # Read only the newly-added portion of cowrie.json
+    with open(COWRIE_JSON_LOG, "r", encoding="utf-8", errors="ignore") as f:
+
         f.seek(log_start)
+
         for line in f:
+
+            line = line.strip()
+
+            if not line:
+                continue
+
             try:
-                e=json.loads(line.decode())
-                events.append(e)
-            except Exception:
-                pass
-    for e in events:
-        if e.get("eventid")=="cowrie.session.connect":
-            session=e.get("session")
+                event = json.loads(line)
+                events.append(event)
+
+            except json.JSONDecodeError:
+                continue
+
+    print(f"[+] New Cowrie events read : {len(events)}")
+
+    # -------------------------------------------------
+    # Find our session
+    # -------------------------------------------------
+
+    for event in events:
+
+        event_name = event.get("eventid") or event.get("event")
+
+        if event_name == "cowrie.session.connect":
+
+            session = event.get("session")
+
+            print(f"[+] Session Found : {session}")
+
             break
-filtered=[e for e in events if session and e.get("session")==session]
 
-execution_log["cowrie_session"]=session
-execution_log["cowrie_events"]=len(filtered)
-execution_log["end_time"]=str(datetime.now())
+    if session is None:
 
-os.makedirs("execution_logs",exist_ok=True)
-stamp=datetime.now().strftime("%Y%m%d_%H%M%S")
-base=scenario["scenario"].replace(" ","_").replace("/","_")
+        print("[!] No Cowrie session found.")
 
-with open(f"execution_logs/{base}_{stamp}.json","w") as f:
-    json.dump(execution_log,f,indent=4)
+    else:
 
-if session:
-    with open(f"execution_logs/{base}_{stamp}_cowrie.json","w") as f:
-        json.dump(filtered,f,indent=4)
+        # Extract only events from this session
+
+        filtered = [
+
+            e for e in events
+
+            if e.get("session") == session
+
+        ]
+
+        print(f"[+] Session Events : {len(filtered)}")
+
+execution_log["cowrie_session"] = session
+execution_log["cowrie_events"] = len(filtered)
+execution_log["end_time"] = str(datetime.now())
+
+# =====================================================
+# Save Controller Log
+# =====================================================
+
+os.makedirs("execution_logs", exist_ok=True)
+stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+base = (
+    scenario["scenario"]
+    .replace(" ", "_")
+    .replace("/", "_")
+)
+
+controller_log = os.path.join(
+    "execution_logs",
+    f"{base}_{stamp}.json"
+)
+
+with open(controller_log, "w") as f:
+    json.dump(execution_log, f, indent=4)
+
+print(f"[+] Controller Log Saved : {controller_log}")
+
+# =====================================================
+# Save Filtered Cowrie Log
+# =====================================================
+
+if session is not None:
+
+    cowrie_log = os.path.join(
+        "execution_logs",
+        f"{base}_{stamp}_cowrie.json"
+    )
+
+    with open(cowrie_log, "w") as f:
+        json.dump(filtered, f, indent=4)
+
+    print(f"[+] Cowrie Log Saved : {cowrie_log}")
+
+else:
+
+    print("[!] No Cowrie log generated because no session was detected.")
 
 print("Done.")
