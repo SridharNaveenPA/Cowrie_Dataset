@@ -1,0 +1,288 @@
+{
+  "scenario": "Linux Persistence Enumeration",
+  "description": "Simulates an attacker attempting to identify persistence opportunities and mechanisms after obtaining privileged access.",
+  "version": "1.0",
+  "platform": "Linux",
+  "phases": [
+    {
+      "phase": "Current User Context",
+      "mitre_tactic": "Persistence",
+      "mitre_id": "TA0003",
+      "commands": [
+        {
+          "command": "whoami",
+          "purpose": "Identify current user",
+          "severity": "Low",
+          "expected_outcome": "Current username",
+          "continue_on_failure": true
+        },
+        {
+          "command": "id",
+          "purpose": "Determine current privileges",
+          "severity": "Low",
+          "expected_outcome": "UID and GID information",
+          "continue_on_failure": true
+        },
+        {
+          "command": "hostname",
+          "purpose": "Identify host",
+          "severity": "Low",
+          "expected_outcome": "Hostname",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Cron Job Enumeration",
+      "mitre_tactic": "Persistence",
+      "mitre_id": "TA0003",
+      "commands": [
+        {
+          "command": "crontab -l",
+          "purpose": "View current user's cron jobs",
+          "severity": "Medium",
+          "expected_outcome": "Cron entries",
+          "continue_on_failure": true
+        },
+        {
+          "command": "ls -la /etc/cron.d",
+          "purpose": "Inspect system cron jobs",
+          "severity": "Medium",
+          "expected_outcome": "Cron directory contents",
+          "continue_on_failure": true
+        },
+        {
+          "command": "ls -la /etc/cron.daily",
+          "purpose": "Inspect daily scheduled jobs",
+          "severity": "Medium",
+          "expected_outcome": "Scheduled scripts",
+          "continue_on_failure": true
+        },
+        {
+          "command": "ls -la /etc/cron.hourly",
+          "purpose": "Inspect hourly scheduled jobs",
+          "severity": "Medium",
+          "expected_outcome": "Hourly scripts",
+          "continue_on_failure": true
+        },
+        {
+          "command": "systemctl list-timers",
+          "purpose": "List active system timers",
+          "severity": "Medium",
+          "expected_outcome": "Scheduled timers",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "SSH Persistence",
+      "mitre_tactic": "Persistence",
+      "mitre_id": "TA0003",
+      "commands": [
+        {
+          "command": "ls -la ~/.ssh",
+          "purpose": "Inspect SSH directory",
+          "severity": "Medium",
+          "expected_outcome": "SSH files",
+          "continue_on_failure": true
+        },
+        {
+          "command": "cat ~/.ssh/authorized_keys",
+          "purpose": "View authorized SSH keys",
+          "severity": "High",
+          "expected_outcome": "Authorized public keys",
+          "continue_on_failure": true
+        },
+        {
+          "command": "cat ~/.ssh/config",
+          "purpose": "Inspect SSH client configuration",
+          "severity": "Medium",
+          "expected_outcome": "SSH configuration",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Systemd Services",
+      "mitre_tactic": "Persistence",
+      "mitre_id": "TA0003",
+      "commands": [
+        {
+          "command": "systemctl",
+          "purpose": "List available services",
+          "severity": "Medium",
+          "expected_outcome": "System services",
+          "continue_on_failure": true
+        },
+        {
+          "command": "systemctl list-units --type=service",
+          "purpose": "List active services",
+          "severity": "Medium",
+          "expected_outcome": "Running services",
+          "continue_on_failure": true
+        },
+        {
+          "command": "service --status-all",
+          "purpose": "Enumerate services",
+          "severity": "Low",
+          "expected_outcome": "Service status",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Startup Scripts",
+      "mitre_tactic": "Persistence",
+      "mitre_id": "TA0003",
+      "commands": [
+        {
+          "command": "ls -la /etc/init.d",
+          "purpose": "Inspect init scripts",
+          "severity": "Medium",
+          "expected_outcome": "Init scripts",
+          "continue_on_failure": true
+        },
+        {
+          "command": "ls -la /etc/profile.d",
+          "purpose": "Inspect profile scripts",
+          "severity": "Medium",
+          "expected_outcome": "Profile scripts",
+          "continue_on_failure": true
+        },
+        {
+          "command": "cat ~/.bashrc",
+          "purpose": "Inspect bash configuration",
+          "severity": "Medium",
+          "expected_outcome": "Shell startup commands",
+          "continue_on_failure": true
+        },
+        {
+          "command": "cat ~/.profile",
+          "purpose": "Inspect user profile",
+          "severity": "Medium",
+          "expected_outcome": "Profile configuration",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "User Accounts",
+      "mitre_tactic": "Persistence",
+      "mitre_id": "TA0003",
+      "commands": [
+        {
+          "command": "cat /etc/passwd",
+          "purpose": "Enumerate user accounts",
+          "severity": "Medium",
+          "expected_outcome": "User list",
+          "continue_on_failure": true
+        },
+        {
+          "command": "cat /etc/group",
+          "purpose": "Enumerate groups",
+          "severity": "Medium",
+          "expected_outcome": "Group list",
+          "continue_on_failure": true
+        },
+        {
+          "command": "last",
+          "purpose": "View login history",
+          "severity": "Low",
+          "expected_outcome": "Previous logins",
+          "continue_on_failure": true
+        },
+        {
+          "command": "lastlog",
+          "purpose": "View last login for all users",
+          "severity": "Low",
+          "expected_outcome": "Last login timestamps",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Environment Inspection",
+      "mitre_tactic": "Persistence",
+      "mitre_id": "TA0003",
+      "commands": [
+        {
+          "command": "env",
+          "purpose": "Inspect environment variables",
+          "severity": "Low",
+          "expected_outcome": "Environment variables",
+          "continue_on_failure": true
+        },
+        {
+          "command": "printenv",
+          "purpose": "Display environment",
+          "severity": "Low",
+          "expected_outcome": "Environment variables",
+          "continue_on_failure": true
+        },
+        {
+          "command": "echo $PATH",
+          "purpose": "Inspect PATH variable",
+          "severity": "Low",
+          "expected_outcome": "PATH",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Writable Locations",
+      "mitre_tactic": "Persistence",
+      "mitre_id": "TA0003",
+      "commands": [
+        {
+          "command": "find /tmp -type f",
+          "purpose": "Inspect temporary files",
+          "severity": "Low",
+          "expected_outcome": "Temporary files",
+          "continue_on_failure": true
+        },
+        {
+          "command": "find /var/tmp -type f",
+          "purpose": "Inspect var tmp",
+          "severity": "Low",
+          "expected_outcome": "Temporary files",
+          "continue_on_failure": true
+        },
+        {
+          "command": "find /dev/shm -type f",
+          "purpose": "Inspect shared memory",
+          "severity": "Low",
+          "expected_outcome": "Shared memory files",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Running Processes",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "command": "ps aux",
+          "purpose": "Enumerate running processes",
+          "severity": "Low",
+          "expected_outcome": "Running processes",
+          "continue_on_failure": true
+        },
+        {
+          "command": "pstree",
+          "purpose": "View process tree",
+          "severity": "Low",
+          "expected_outcome": "Process hierarchy",
+          "continue_on_failure": true
+        },
+        {
+          "command": "top -b -n 1",
+          "purpose": "View active processes",
+          "severity": "Low",
+          "expected_outcome": "Running processes",
+          "continue_on_failure": true
+        }
+      ]
+    }
+  ]
+}

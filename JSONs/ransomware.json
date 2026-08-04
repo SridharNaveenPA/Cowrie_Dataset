@@ -1,0 +1,280 @@
+{
+  "scenario": "Ransomware Pre-Encryption Reconnaissance",
+  "description": "Simulates a ransomware operator performing reconnaissance and identifying valuable data prior to encryption. This profile focuses on discovery and preparation rather than destructive actions.",
+  "version": "1.0",
+  "platform": "Linux",
+  "phases": [
+    {
+      "phase": "Initial Host Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "RANSOM-001",
+          "command": "whoami",
+          "purpose": "Identify current user",
+          "severity": "Low",
+          "expected_outcome": "Username",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-002",
+          "command": "id",
+          "purpose": "Determine privileges",
+          "severity": "Low",
+          "expected_outcome": "UID/GID",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-003",
+          "command": "hostname",
+          "purpose": "Identify target host",
+          "severity": "Low",
+          "expected_outcome": "Hostname",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-004",
+          "command": "uname -a",
+          "purpose": "Identify operating system",
+          "severity": "Low",
+          "expected_outcome": "Kernel information",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-005",
+          "command": "cat /etc/os-release",
+          "purpose": "Identify Linux distribution",
+          "severity": "Low",
+          "expected_outcome": "OS version",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Filesystem Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "RANSOM-006",
+          "command": "pwd",
+          "purpose": "Determine current directory",
+          "severity": "Low",
+          "expected_outcome": "Working directory",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-007",
+          "command": "ls -la",
+          "purpose": "List files",
+          "severity": "Low",
+          "expected_outcome": "Directory listing",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-008",
+          "command": "find /home -maxdepth 2",
+          "purpose": "Locate user directories",
+          "severity": "Medium",
+          "expected_outcome": "User folders",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-009",
+          "command": "find /var/www -maxdepth 2",
+          "purpose": "Locate web application data",
+          "severity": "Medium",
+          "expected_outcome": "Web directories",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Document Discovery",
+      "mitre_tactic": "Collection",
+      "mitre_id": "TA0009",
+      "commands": [
+        {
+          "id": "RANSOM-010",
+          "command": "find /home -iname '*.doc'",
+          "purpose": "Locate Word documents",
+          "severity": "Medium",
+          "expected_outcome": "Document paths",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-011",
+          "command": "find /home -iname '*.pdf'",
+          "purpose": "Locate PDF documents",
+          "severity": "Medium",
+          "expected_outcome": "PDF files",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-012",
+          "command": "find /home -iname '*.xlsx'",
+          "purpose": "Locate spreadsheets",
+          "severity": "Medium",
+          "expected_outcome": "Spreadsheet files",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-013",
+          "command": "find /home -iname '*.pptx'",
+          "purpose": "Locate presentations",
+          "severity": "Medium",
+          "expected_outcome": "Presentation files",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Backup Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "RANSOM-014",
+          "command": "mount",
+          "purpose": "Enumerate mounted storage",
+          "severity": "Medium",
+          "expected_outcome": "Mounted filesystems",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-015",
+          "command": "df -h",
+          "purpose": "Inspect storage volumes",
+          "severity": "Low",
+          "expected_outcome": "Disk usage",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-016",
+          "command": "lsblk",
+          "purpose": "Identify attached disks",
+          "severity": "Low",
+          "expected_outcome": "Block devices",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-017",
+          "command": "find / -iname '*backup*' 2>/dev/null",
+          "purpose": "Locate backup files",
+          "severity": "Medium",
+          "expected_outcome": "Backup locations",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Network Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "RANSOM-018",
+          "command": "ip addr",
+          "purpose": "Identify interfaces",
+          "severity": "Low",
+          "expected_outcome": "IP addresses",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-019",
+          "command": "ip route",
+          "purpose": "Inspect routing table",
+          "severity": "Low",
+          "expected_outcome": "Routes",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-020",
+          "command": "hostname -I",
+          "purpose": "Determine host IP",
+          "severity": "Low",
+          "expected_outcome": "IP addresses",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Credential Discovery",
+      "mitre_tactic": "Credential Access",
+      "mitre_id": "TA0006",
+      "commands": [
+        {
+          "id": "RANSOM-021",
+          "command": "cat ~/.bash_history",
+          "purpose": "Inspect shell history",
+          "severity": "Medium",
+          "expected_outcome": "Command history",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-022",
+          "command": "ls -la ~/.ssh",
+          "purpose": "Locate SSH credentials",
+          "severity": "Medium",
+          "expected_outcome": "SSH directory",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-023",
+          "command": "printenv",
+          "purpose": "Inspect environment variables",
+          "severity": "Low",
+          "expected_outcome": "Environment variables",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Privilege Assessment",
+      "mitre_tactic": "Privilege Escalation",
+      "mitre_id": "TA0004",
+      "commands": [
+        {
+          "id": "RANSOM-024",
+          "command": "sudo -l",
+          "purpose": "Check sudo permissions",
+          "severity": "High",
+          "expected_outcome": "Sudo privileges",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-025",
+          "command": "find / -perm -4000 2>/dev/null",
+          "purpose": "Locate SUID binaries",
+          "severity": "High",
+          "expected_outcome": "SUID executables",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "System Services",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "RANSOM-026",
+          "command": "systemctl list-units --type=service",
+          "purpose": "Enumerate running services",
+          "severity": "Low",
+          "expected_outcome": "Service list",
+          "continue_on_failure": true
+        },
+        {
+          "id": "RANSOM-027",
+          "command": "ps aux",
+          "purpose": "Inspect running processes",
+          "severity": "Low",
+          "expected_outcome": "Process list",
+          "continue_on_failure": true
+        }
+      ]
+    }
+  ]
+}

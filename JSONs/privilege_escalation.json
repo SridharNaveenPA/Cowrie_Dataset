@@ -1,0 +1,280 @@
+{
+  "scenario": "Linux Privilege Escalation Enumeration",
+  "description": "Simulates an attacker searching for privilege escalation opportunities after obtaining shell access.",
+  "version": "1.0",
+  "platform": "Linux",
+  "phases": [
+    {
+      "phase": "Identity Verification",
+      "mitre_tactic": "Privilege Escalation",
+      "mitre_id": "TA0004",
+      "commands": [
+        {
+          "command": "whoami",
+          "purpose": "Identify current user",
+          "severity": "Low"
+        },
+        {
+          "command": "id",
+          "purpose": "Display UID, GID and groups",
+          "severity": "Low"
+        },
+        {
+          "command": "groups",
+          "purpose": "Determine group memberships",
+          "severity": "Low"
+        },
+        {
+          "command": "hostname",
+          "purpose": "Identify target host",
+          "severity": "Low"
+        }
+      ]
+    },
+    {
+      "phase": "Sudo Enumeration",
+      "mitre_tactic": "Privilege Escalation",
+      "mitre_id": "TA0004",
+      "commands": [
+        {
+          "command": "sudo -l",
+          "purpose": "List sudo privileges",
+          "severity": "High"
+        },
+        {
+          "command": "sudo -V",
+          "purpose": "Determine sudo version",
+          "severity": "Medium"
+        },
+        {
+          "command": "cat /etc/sudoers",
+          "purpose": "Inspect sudo configuration",
+          "severity": "High"
+        },
+        {
+          "command": "ls -la /etc/sudoers.d",
+          "purpose": "Inspect additional sudo rules",
+          "severity": "Medium"
+        }
+      ]
+    },
+    {
+      "phase": "SUID Enumeration",
+      "mitre_tactic": "Privilege Escalation",
+      "mitre_id": "TA0004",
+      "commands": [
+        {
+          "command": "find / -perm -4000 2>/dev/null",
+          "purpose": "Locate SUID binaries",
+          "severity": "High"
+        },
+        {
+          "command": "find / -perm -2000 2>/dev/null",
+          "purpose": "Locate SGID binaries",
+          "severity": "High"
+        },
+        {
+          "command": "find /usr/bin -perm -4000",
+          "purpose": "Enumerate SUID executables",
+          "severity": "High"
+        }
+      ]
+    },
+    {
+      "phase": "Linux Capabilities",
+      "mitre_tactic": "Privilege Escalation",
+      "mitre_id": "TA0004",
+      "commands": [
+        {
+          "command": "getcap -r / 2>/dev/null",
+          "purpose": "Search binaries with Linux capabilities",
+          "severity": "High"
+        },
+        {
+          "command": "capsh --print",
+          "purpose": "Display current capabilities",
+          "severity": "Medium"
+        }
+      ]
+    },
+    {
+      "phase": "Kernel Enumeration",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "command": "uname -a",
+          "purpose": "Identify kernel version",
+          "severity": "Medium"
+        },
+        {
+          "command": "uname -r",
+          "purpose": "Determine kernel release",
+          "severity": "Medium"
+        },
+        {
+          "command": "cat /etc/os-release",
+          "purpose": "Identify operating system",
+          "severity": "Low"
+        },
+        {
+          "command": "hostnamectl",
+          "purpose": "Retrieve OS details",
+          "severity": "Low"
+        }
+      ]
+    },
+    {
+      "phase": "Filesystem Permissions",
+      "mitre_tactic": "Privilege Escalation",
+      "mitre_id": "TA0004",
+      "commands": [
+        {
+          "command": "find / -writable -type d 2>/dev/null",
+          "purpose": "Locate world-writable directories",
+          "severity": "High"
+        },
+        {
+          "command": "find / -writable -type f 2>/dev/null",
+          "purpose": "Locate writable files",
+          "severity": "High"
+        },
+        {
+          "command": "find /tmp -type f",
+          "purpose": "Inspect temporary files",
+          "severity": "Low"
+        },
+        {
+          "command": "ls -ld /tmp",
+          "purpose": "Inspect temporary directory permissions",
+          "severity": "Low"
+        }
+      ]
+    },
+    {
+      "phase": "Cron Jobs",
+      "mitre_tactic": "Persistence",
+      "mitre_id": "TA0003",
+      "commands": [
+        {
+          "command": "crontab -l",
+          "purpose": "Inspect user cron jobs",
+          "severity": "Medium"
+        },
+        {
+          "command": "ls -la /etc/cron*",
+          "purpose": "Enumerate scheduled jobs",
+          "severity": "Medium"
+        },
+        {
+          "command": "systemctl list-timers",
+          "purpose": "Inspect scheduled timers",
+          "severity": "Medium"
+        }
+      ]
+    },
+    {
+      "phase": "System Services",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "command": "systemctl",
+          "purpose": "List system services",
+          "severity": "Low"
+        },
+        {
+          "command": "service --status-all",
+          "purpose": "Enumerate running services",
+          "severity": "Low"
+        },
+        {
+          "command": "ps aux",
+          "purpose": "List running processes",
+          "severity": "Low"
+        },
+        {
+          "command": "pstree",
+          "purpose": "Inspect process hierarchy",
+          "severity": "Low"
+        }
+      ]
+    },
+    {
+      "phase": "Docker and Containers",
+      "mitre_tactic": "Privilege Escalation",
+      "mitre_id": "TA0004",
+      "commands": [
+        {
+          "command": "docker ps",
+          "purpose": "Check Docker access",
+          "severity": "High"
+        },
+        {
+          "command": "docker images",
+          "purpose": "Enumerate Docker images",
+          "severity": "Medium"
+        },
+        {
+          "command": "docker info",
+          "purpose": "Inspect Docker configuration",
+          "severity": "Medium"
+        },
+        {
+          "command": "groups | grep docker",
+          "purpose": "Determine Docker group membership",
+          "severity": "High"
+        }
+      ]
+    },
+    {
+      "phase": "Mounted Filesystems",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "command": "mount",
+          "purpose": "Display mounted filesystems",
+          "severity": "Medium"
+        },
+        {
+          "command": "df -h",
+          "purpose": "Check mounted storage",
+          "severity": "Low"
+        },
+        {
+          "command": "lsblk",
+          "purpose": "Enumerate block devices",
+          "severity": "Low"
+        }
+      ]
+    },
+    {
+      "phase": "Interesting System Files",
+      "mitre_tactic": "Credential Access",
+      "mitre_id": "TA0006",
+      "commands": [
+        {
+          "command": "cat /etc/passwd",
+          "purpose": "Enumerate local users",
+          "severity": "Medium"
+        },
+        {
+          "command": "cat /etc/group",
+          "purpose": "Enumerate groups",
+          "severity": "Medium"
+        },
+        {
+          "command": "cat /etc/fstab",
+          "purpose": "Inspect filesystem configuration",
+          "severity": "Medium"
+        },
+        {
+          "command": "cat /etc/hosts",
+          "purpose": "Inspect host mappings",
+          "severity": "Low"
+        }
+      ]
+    }
+  ]
+}

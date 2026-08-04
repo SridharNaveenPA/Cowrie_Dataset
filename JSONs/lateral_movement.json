@@ -1,0 +1,289 @@
+{
+  "scenario": "Lateral Movement Preparation",
+  "description": "Simulates an attacker preparing for lateral movement by discovering neighboring hosts, remote access configurations, network shares, and trusted systems after compromising a Linux machine.",
+  "version": "1.0",
+  "platform": "Linux",
+  "recommended_next_scenario": "credential_discovery.json",
+  "phases": [
+    {
+      "phase": "Network Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "LAT-001",
+          "command": "hostname",
+          "purpose": "Identify compromised host",
+          "severity": "Low",
+          "expected_outcome": "Hostname",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-002",
+          "command": "hostname -I",
+          "purpose": "Determine local IP addresses",
+          "severity": "Low",
+          "expected_outcome": "IP addresses",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-003",
+          "command": "ip addr",
+          "purpose": "Enumerate network interfaces",
+          "severity": "Low",
+          "expected_outcome": "Interface information",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-004",
+          "command": "ip route",
+          "purpose": "Inspect routing table",
+          "severity": "Low",
+          "expected_outcome": "Routing information",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-005",
+          "command": "arp -a",
+          "purpose": "Identify neighboring systems",
+          "severity": "Medium",
+          "expected_outcome": "ARP cache entries",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Network Connection Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "LAT-006",
+          "command": "ss -tulnp",
+          "purpose": "Enumerate listening services",
+          "severity": "Medium",
+          "expected_outcome": "Open sockets",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-007",
+          "command": "netstat -tulnp",
+          "purpose": "Inspect active network connections",
+          "severity": "Medium",
+          "expected_outcome": "Listening ports",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-008",
+          "command": "netstat -rn",
+          "purpose": "Inspect routing table",
+          "severity": "Low",
+          "expected_outcome": "Routes",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "SSH Discovery",
+      "mitre_tactic": "Credential Access",
+      "mitre_id": "TA0006",
+      "commands": [
+        {
+          "id": "LAT-009",
+          "command": "ls -la ~/.ssh",
+          "purpose": "Inspect SSH directory",
+          "severity": "Medium",
+          "expected_outcome": "SSH files",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-010",
+          "command": "cat ~/.ssh/config",
+          "purpose": "Inspect SSH client configuration",
+          "severity": "Medium",
+          "expected_outcome": "SSH configuration",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-011",
+          "command": "cat ~/.ssh/known_hosts",
+          "purpose": "Identify previously accessed hosts",
+          "severity": "High",
+          "expected_outcome": "Known hosts",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-012",
+          "command": "cat ~/.ssh/authorized_keys",
+          "purpose": "Inspect authorized keys",
+          "severity": "High",
+          "expected_outcome": "Authorized keys",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Remote System Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "LAT-013",
+          "command": "cat /etc/hosts",
+          "purpose": "Identify known hosts",
+          "severity": "Low",
+          "expected_outcome": "Host mappings",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-014",
+          "command": "cat /etc/resolv.conf",
+          "purpose": "Identify DNS configuration",
+          "severity": "Low",
+          "expected_outcome": "DNS servers",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-015",
+          "command": "hostnamectl",
+          "purpose": "Inspect host configuration",
+          "severity": "Low",
+          "expected_outcome": "Host details",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Mounted Share Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "LAT-016",
+          "command": "mount",
+          "purpose": "Inspect mounted filesystems",
+          "severity": "Medium",
+          "expected_outcome": "Mounted filesystems",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-017",
+          "command": "df -h",
+          "purpose": "Inspect mounted storage",
+          "severity": "Low",
+          "expected_outcome": "Filesystem usage",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-018",
+          "command": "lsblk",
+          "purpose": "Enumerate storage devices",
+          "severity": "Low",
+          "expected_outcome": "Block devices",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "User Relationship Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "LAT-019",
+          "command": "who",
+          "purpose": "Identify logged-in users",
+          "severity": "Low",
+          "expected_outcome": "Logged-in users",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-020",
+          "command": "w",
+          "purpose": "View active user sessions",
+          "severity": "Low",
+          "expected_outcome": "User activity",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-021",
+          "command": "last",
+          "purpose": "Review login history",
+          "severity": "Medium",
+          "expected_outcome": "Login records",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-022",
+          "command": "lastlog",
+          "purpose": "Inspect previous logins",
+          "severity": "Medium",
+          "expected_outcome": "Last login timestamps",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Service Discovery",
+      "mitre_tactic": "Discovery",
+      "mitre_id": "TA0007",
+      "commands": [
+        {
+          "id": "LAT-023",
+          "command": "systemctl list-units --type=service",
+          "purpose": "Enumerate services",
+          "severity": "Low",
+          "expected_outcome": "Running services",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-024",
+          "command": "service --status-all",
+          "purpose": "Inspect available services",
+          "severity": "Low",
+          "expected_outcome": "Service list",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-025",
+          "command": "ps aux",
+          "purpose": "Inspect running processes",
+          "severity": "Low",
+          "expected_outcome": "Process list",
+          "continue_on_failure": true
+        }
+      ]
+    },
+    {
+      "phase": "Credential Cache Discovery",
+      "mitre_tactic": "Credential Access",
+      "mitre_id": "TA0006",
+      "commands": [
+        {
+          "id": "LAT-026",
+          "command": "history",
+          "purpose": "Inspect shell history",
+          "severity": "Medium",
+          "expected_outcome": "Command history",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-027",
+          "command": "cat ~/.bash_history",
+          "purpose": "Review previous SSH activity",
+          "severity": "Medium",
+          "expected_outcome": "Shell history",
+          "continue_on_failure": true
+        },
+        {
+          "id": "LAT-028",
+          "command": "printenv",
+          "purpose": "Inspect environment variables",
+          "severity": "Low",
+          "expected_outcome": "Environment variables",
+          "continue_on_failure": true
+        }
+      ]
+    }
+  ]
+}
