@@ -10,7 +10,7 @@ HOST="127.0.0.1"
 PORT=2222
 USERNAME="root"
 PASSWORD="password"
-COWRIE_JSON_LOG="/home/kali/cowrie/var/log/cowrie/cowrie.json"
+COWRIE_JSON_LOG="/home/cowrie/cowrie/var/log/cowrie/cowrie.json"
 
 SCENARIOS={
 "1":{"name":"Credential Discovery","file":"credential_discovery.json"},
