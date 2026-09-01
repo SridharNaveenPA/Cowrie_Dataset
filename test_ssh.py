@@ -1,17 +1,31 @@
-from ssh_executor import SSHExecutor
+import json
+
+from llm import ask_llm
 
 
-executor = SSHExecutor(
-    host="127.0.0.1",
-    port=2222,
-    username="root",
-    password="password"
+scenario = {
+    "scenario": "Credential Discovery",
+    "description": (
+        "Discover credentials, secrets, SSH keys, "
+        "API tokens and authentication artifacts."
+    )
+}
+
+
+history = [
+    {
+        "command": "whoami",
+        "output": "root",
+        "goal": "User Identification"
+    }
+]
+
+
+result = ask_llm(
+    scenario,
+    history
 )
 
-executor.connect()
 
-print(executor.execute("whoami"))
-print(executor.execute("pwd"))
-print(executor.execute("ls"))
-
-executor.close()
+print("\nLLM RESPONSE:")
+print(json.dumps(result, indent=4))
